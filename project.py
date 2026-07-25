@@ -16,22 +16,22 @@ try:
     player_right = tk.PhotoImage(file="player_right.png")
     player_left = tk.PhotoImage(file="player_left.png")
 
-WINDOW_WIDTH = 1900
-WINDOW_HEIGHT = 815
+    WINDOW_WIDTH = 1900
+    WINDOW_HEIGHT = 815
 
-root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
-root.resizable(False, False)
+    root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
+    root.resizable(False, False)
 
-canvas = tk.Canvas(root, width=WINDOW_WIDTH, height=WINDOW_HEIGHT, bd=0, highlightthickness=0)
-canvas.pack()
+    canvas = tk.Canvas(root, width=WINDOW_WIDTH, height=WINDOW_HEIGHT, bd=0, highlightthickness=0)
+    canvas.pack()
 
-player_right= tk.PhotoImage(file="C:/Users/APP_11/Desktop/ㅗ/player_right.png").subsample(1, 1)
-player_left.png = tk.PhotoImage(file="C:/Users/APP_11/Desktop/ㅗ/player_left.png").subsample(1, 1)
-
-current_player_image = player_right
-    
-    ball_original = tk.PhotoImage(file="C:/Users/APP_11/Desktop/ㅗ/ball.png")
-    ball_image = all_original.subsample(5, 5)
+    player_right= tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/player_right.png").subsample(1, 1)
+    player_left.png = tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/player_left.png").subsample(1, 1)
+    bg_image =tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/field.jpg")
+    current_player_image = player_right
+        
+    ball_original = tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/ball.png")
+    ball_image = ball_original.subsample(5, 5)
 except Exception as e:
     print(e)
     root.destroy()
