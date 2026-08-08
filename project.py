@@ -16,8 +16,8 @@ try:
     player_right = tk.PhotoImage(file="player_right.png")
     player_left = tk.PhotoImage(file="player_left.png")
 
-    WINDOW_WIDTH = 1900
-    WINDOW_HEIGHT = 815
+    WINDOW_WIDTH = 1655
+    WINDOW_HEIGHT = 950
 
     root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
     root.resizable(False, False)
@@ -27,7 +27,7 @@ try:
 
     player_right= tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/player_right.png").subsample(1, 1)
     player_left.png = tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/player_left.png").subsample(1, 1)
-    bg_image =tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/field.jpg")
+    bg_image =tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/field.png")
     current_player_image = player_right
         
     ball_original = tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/ball.png")
@@ -96,3 +96,6 @@ def move_player(event):
 
 root.bind("<Key>", move_player)
 root.mainloop()
+
+def event_shoot
+    
