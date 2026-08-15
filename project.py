@@ -22,22 +22,46 @@ try:
     root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
     root.resizable(False, False)
 
-    canvas = tk.Canvas(root, width=WINDOW_WIDTH, height=WINDOW_HEIGHT, bd=0, highlightthickness=0)
+    canvas = tk.Canvas(
+        root,
+        width=WINDOW_WIDTH,
+        height=WINDOW_HEIGHT,
+        bd=0,
+        highlightthickness=0
+    )
     canvas.pack()
 
-    player_right= tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/player_right.png").subsample(1, 1)
-    player_left.png = tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/player_left.png").subsample(1, 1)
-    bg_image =tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/field.png")
+    player_right = tk.PhotoImage(
+        file="C:/Users/APP_11/Documents/GitHub/game/player_right.png"
+    ).subsample(1, 1)
+
+    player_left = tk.PhotoImage(
+        file="C:/Users/APP_11/Documents/GitHub/game/player_left.png"
+    ).subsample(1, 1)
+
+    bg_image = tk.PhotoImage(
+        file="C:/Users/APP_11/Documents/GitHub/game/field.png"
+    )
+
     current_player_image = player_right
-        
-    ball_original = tk.PhotoImage(file="C:/Users/APP_11/Documents/GitHub/game/ball.png")
+
+    ball_original = tk.PhotoImage(
+        file="C:/Users/APP_11/Documents/GitHub/game/ball.png"
+    )
+
     ball_image = ball_original.subsample(5, 5)
+
 except Exception as e:
     print(e)
     root.destroy()
     exit()
 
-canvas.create_image(0, 0, anchor=tk.NW, image=bg_image)
+canvas.create_image(
+    0,
+    0,
+    anchor=tk.NW,
+    image=bg_image
+)
 
 player = canvas.create_image(
     WINDOW_WIDTH // 2 - 100,
@@ -45,57 +69,216 @@ player = canvas.create_image(
     anchor=tk.CENTER,
     image=current_player_image
 )
-ball = canvas.create_image(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2, anchor=tk.CENTER, image=ball_image)
+
+ball = canvas.create_image(
+    WINDOW_WIDTH // 2,
+    WINDOW_HEIGHT // 2,
+    anchor=tk.CENTER,
+    image=ball_image
+)
 
 SPEED = 4
 COLLISION_DIST = 30
 
+ball_vx = 0
+ball_vy = 0
+
+SHOT_POWER = 12
+BALL_FRICTION = 0.96
+SHOT_COOLDOWN = 0.5
+last_shot_time = 0
+
+player_dir_x = 1
+player_dir_y = 0
+
+
 def check_collision(dx, dy):
     p_pos = canvas.coords(player)
     b_pos = canvas.coords(ball)
-    
-    if abs(p_pos[0] - b_pos[0]) < COLLISION_DIST and abs(p_pos[1] - b_pos[1]) < COLLISION_DIST:
+
+    if (
+        abs(p_pos[0] - b_pos[0]) < COLLISION_DIST
+        and
+        abs(p_pos[1] - b_pos[1]) < COLLISION_DIST
+    ):
         next_bx = b_pos[0] + dx
         next_by = b_pos[1] + dy
-        
-        if 10 <= next_bx <= WINDOW_WIDTH - 10 and 10 <= next_by <= WINDOW_HEIGHT - 10:
+
+        if (
+            10 <= next_bx <= WINDOW_WIDTH - 10
+            and
+            10 <= next_by <= WINDOW_HEIGHT - 10
+        ):
             canvas.move(ball, dx, dy)
         else:
             return False
+
     return True
 
 def move_player(event):
     global current_player_image
+    global player_dir_x, player_dir_y
+
     key = event.char.lower()
-    dx, dy = 0, 0
-    
+
+    dx = 0
+    dy = 0
+
     if key == 'w':
         dy = -SPEED
+
+        player_dir_x = 0
+        player_dir_y = -1
+
     elif key == 's':
         dy = SPEED
+
+        player_dir_x = 0
+        player_dir_y = 1
+
     elif key == 'a':
         dx = -SPEED
-        
-        current_player_image= player_left
-        canvas.itemconfig(player, image=current_player_image)
+
+        player_dir_x = -1
+        player_dir_y = 0
+
+        current_player_image = player_left
+        canvas.itemconfig(
+            player,
+            image=current_player_image
+        )
+
     elif key == 'd':
         dx = SPEED
-        
-        current_player_image= player_right
-        canvas.itemconfig(player, image=current_player_image)
+
+        player_dir_x = 1
+        player_dir_y = 0
+
+        current_player_image = player_right
+        canvas.itemconfig(
+            player,
+            image=current_player_image
+        )
+
     if dx == 0 and dy == 0:
         return
 
     p_pos = canvas.coords(player)
+
     next_px = p_pos[0] + dx
     next_py = p_pos[1] + dy
-    
-    if 25 <= next_px <= WINDOW_WIDTH - 25 and 25 <= next_py <= WINDOW_HEIGHT - 25:
+
+    if (
+        25 <= next_px <= WINDOW_WIDTH - 25
+        and
+        25 <= next_py <= WINDOW_HEIGHT - 25
+    ):
         if check_collision(dx, dy):
             canvas.move(player, dx, dy)
 
-root.bind("<Key>", move_player)
-root.mainloop()
 
-def event_shoot
-    
+def shoot(power=None):
+    global ball_vx, ball_vy
+    global last_shot_time
+
+    current_time = root.tk.call("clock", "milliseconds") / 1000
+
+    if current_time - last_shot_time < SHOT_COOLDOWN:
+        return
+
+    p_pos = canvas.coords(player)
+    b_pos = canvas.coords(ball)
+
+    dx = b_pos[0] - p_pos[0]
+    dy = b_pos[1] - p_pos[1]
+
+    distance = (dx ** 2 + dy ** 2) ** 0.5
+
+    if distance <= 60:
+
+        if power is None:
+            power = MIN_SHOT_POWER
+
+        ball_vx = player_dir_x * power
+        ball_vy = player_dir_y * power
+
+        last_shot_time = current_time
+
+
+def update_ball():
+    global ball_vx, ball_vy
+
+    if ball_vx != 0 or ball_vy != 0:
+
+        canvas.move(
+            ball,
+            ball_vx,
+            ball_vy
+        )
+
+        ball_vx *= BALL_FRICTION
+        ball_vy *= BALL_FRICTION
+
+        if abs(ball_vx) < 0.1:
+            ball_vx = 0
+
+        if abs(ball_vy) < 0.1:
+            ball_vy = 0
+
+        b_pos = canvas.coords(ball)
+
+        if b_pos[0] < 10:
+            canvas.move(
+                ball,
+                10 - b_pos[0],
+                0
+            )
+
+            ball_vx *= -0.5
+
+        elif b_pos[0] > WINDOW_WIDTH - 10:
+            canvas.move(
+                ball,
+                WINDOW_WIDTH - 10 - b_pos[0],
+                0
+            )
+
+            ball_vx *= -0.5
+
+        if b_pos[1] < 10:
+            canvas.move(
+                ball,
+                0,
+                10 - b_pos[1]
+            )
+
+            ball_vy *= -0.5
+
+        elif b_pos[1] > WINDOW_HEIGHT - 10:
+            canvas.move(
+                ball,
+                0,
+                WINDOW_HEIGHT - 10 - b_pos[1]
+            )
+
+            ball_vy *= -0.5
+
+    root.after(16, update_ball)
+
+
+
+
+def game_key(event):
+
+    if event.keysym.lower() == "z":
+        shoot()
+
+    else:
+        move_player(event)
+
+
+root.bind("<Key>", game_key)
+
+update_ball()
+
+root.mainloop()
