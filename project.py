@@ -1,5 +1,6 @@
 import tkinter as tk
 import ctypes
+import time
 
 try:
     ctypes.windll.shcore.SetProcessDpiAwareness(1)
@@ -77,19 +78,23 @@ ball = canvas.create_image(
     image=ball_image
 )
 
+
 SPEED = 4
 COLLISION_DIST = 30
 
 ball_vx = 0
 ball_vy = 0
 
+
 SHOT_POWER = 12
-BALL_FRICTION = 0.96
-SHOT_COOLDOWN = 0.5
+SHOT_COOLDOWN = 1
 last_shot_time = 0
+
+BALL_FRICTION = 0.96
 
 player_dir_x = 1
 player_dir_y = 0
+
 
 
 def check_collision(dx, dy):
@@ -115,6 +120,7 @@ def check_collision(dx, dy):
 
     return True
 
+
 def move_player(event):
     global current_player_image
     global player_dir_x, player_dir_y
@@ -124,21 +130,18 @@ def move_player(event):
     dx = 0
     dy = 0
 
-    if key == 'w':
+    if key == "w":
         dy = -SPEED
-
         player_dir_x = 0
         player_dir_y = -1
 
-    elif key == 's':
+    elif key == "s":
         dy = SPEED
-
         player_dir_x = 0
         player_dir_y = 1
 
-    elif key == 'a':
+    elif key == "a":
         dx = -SPEED
-
         player_dir_x = -1
         player_dir_y = 0
 
@@ -148,9 +151,8 @@ def move_player(event):
             image=current_player_image
         )
 
-    elif key == 'd':
+    elif key == "d":
         dx = SPEED
-
         player_dir_x = 1
         player_dir_y = 0
 
@@ -160,7 +162,7 @@ def move_player(event):
             image=current_player_image
         )
 
-    if dx == 0 and dy == 0:
+    else:
         return
 
     p_pos = canvas.coords(player)
@@ -177,11 +179,11 @@ def move_player(event):
             canvas.move(player, dx, dy)
 
 
-def shoot(power=None):
+def shoot():
     global ball_vx, ball_vy
     global last_shot_time
 
-    current_time = root.tk.call("clock", "milliseconds") / 1000
+    current_time = time.monotonic()
 
     if current_time - last_shot_time < SHOT_COOLDOWN:
         return
@@ -192,15 +194,12 @@ def shoot(power=None):
     dx = b_pos[0] - p_pos[0]
     dy = b_pos[1] - p_pos[1]
 
-    distance = (dx ** 2 + dy ** 2) ** 0.5
+    distance = (dx * dx + dy * dy) ** 0.5
 
-    if distance <= 60:
+    if distance <= 100:
 
-        if power is None:
-            power = MIN_SHOT_POWER
-
-        ball_vx = player_dir_x * power
-        ball_vy = player_dir_y * power
+        ball_vx = player_dir_x * SHOT_POWER
+        ball_vy = player_dir_y * SHOT_POWER
 
         last_shot_time = current_time
 
@@ -233,7 +232,6 @@ def update_ball():
                 10 - b_pos[0],
                 0
             )
-
             ball_vx *= -0.5
 
         elif b_pos[0] > WINDOW_WIDTH - 10:
@@ -242,7 +240,6 @@ def update_ball():
                 WINDOW_WIDTH - 10 - b_pos[0],
                 0
             )
-
             ball_vx *= -0.5
 
         if b_pos[1] < 10:
@@ -251,7 +248,6 @@ def update_ball():
                 0,
                 10 - b_pos[1]
             )
-
             ball_vy *= -0.5
 
         elif b_pos[1] > WINDOW_HEIGHT - 10:
@@ -260,24 +256,23 @@ def update_ball():
                 0,
                 WINDOW_HEIGHT - 10 - b_pos[1]
             )
-
             ball_vy *= -0.5
 
     root.after(16, update_ball)
-
-
 
 
 def game_key(event):
 
     if event.keysym.lower() == "z":
         shoot()
+        return
 
-    else:
-        move_player(event)
+    move_player(event)
 
 
-root.bind("<Key>", game_key)
+root.bind("<KeyPress>", game_key)
+
+root.focus_force()
 
 update_ball()
 
