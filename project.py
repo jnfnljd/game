@@ -13,15 +13,29 @@ except:
 root = tk.Tk()
 root.title("Soccer Game")
 
+fullscreen = False
+
+def toggle_fullscreen(event=None):
+    global fullscreen
+
+    fullscreen = not fullscreen
+    root.attributes("-fullscreen", fullscreen)
+    
+root.bind("<F11>", toggle_fullscreen)
+
+
+
+    
 try:
     player_right = tk.PhotoImage(file="player_right.png")
     player_left = tk.PhotoImage(file="player_left.png")
 
-    WINDOW_WIDTH = 1655
-    WINDOW_HEIGHT = 950
+    WINDOW_WIDTH = 1667
+    WINDOW_HEIGHT = 924
 
     root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
     root.resizable(False, False)
+    
 
     canvas = tk.Canvas(
         root,
@@ -51,6 +65,14 @@ try:
     )
 
     ball_image = ball_original.subsample(5, 5)
+    
+    goal_left_image = tk.PhotoImage(
+    file="C:/Users/APP_11/Documents/GitHub/game/left_goal.png"
+    ).subsample(4, 4)
+
+    goal_right_image = tk.PhotoImage(
+    file="C:/Users/APP_11/Documents/GitHub/game/right_goal.png"
+    ).subsample(2, 2) 
 
 except Exception as e:
     print(e)
@@ -259,6 +281,26 @@ def update_ball():
             ball_vy *= -0.5
 
     root.after(16, update_ball)
+    
+LEFT_GOAL_X = 95
+LEFT_GOAL_Y = 402
+
+RIGHT_GOAL_X = 1667
+RIGHT_GOAL_Y = 462
+
+left_goal = canvas.create_image(
+    LEFT_GOAL_X,
+    LEFT_GOAL_Y,
+    anchor=tk.CENTER,
+    image=goal_left_image
+)
+
+right_goal = canvas.create_image(
+    RIGHT_GOAL_X,
+    RIGHT_GOAL_Y,
+    anchor=tk.CENTER,
+    image=goal_right_image
+)
 
 
 def game_key(event):
@@ -277,3 +319,4 @@ root.focus_force()
 update_ball()
 
 root.mainloop()
+
