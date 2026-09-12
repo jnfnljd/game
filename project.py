@@ -13,7 +13,7 @@ except:
 root = tk.Tk()
 root.title("Soccer Game")
 
-fullscreen = False
+fullscreen = True
 
 def toggle_fullscreen(event=None):
     global fullscreen
@@ -34,7 +34,7 @@ try:
     WINDOW_HEIGHT = 924
 
     root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
-    root.resizable(False, False)
+    root.resizable(True, True)
     
 
     canvas = tk.Canvas(
@@ -72,7 +72,7 @@ try:
 
     goal_right_image = tk.PhotoImage(
     file="C:/Users/APP_11/Documents/GitHub/game/right_goal.png"
-    ).subsample(2, 2) 
+    ).subsample(4, 4) 
 
 except Exception as e:
     print(e)
@@ -282,11 +282,11 @@ def update_ball():
 
     root.after(16, update_ball)
     
-LEFT_GOAL_X = 95
-LEFT_GOAL_Y = 402
+LEFT_GOAL_X = 70      
+LEFT_GOAL_Y = 390
 
-RIGHT_GOAL_X = 1667
-RIGHT_GOAL_Y = 462
+RIGHT_GOAL_X = 1400
+RIGHT_GOAL_Y = 390
 
 left_goal = canvas.create_image(
     LEFT_GOAL_X,
@@ -305,7 +305,7 @@ right_goal = canvas.create_image(
 
 def game_key(event):
 
-    if event.keysym.lower() == "z":
+    if event.kweysym.lower() == "z":
         shoot()
         return
 
@@ -320,3 +320,5 @@ update_ball()
 
 root.mainloop()
 
+
+#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaagaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
